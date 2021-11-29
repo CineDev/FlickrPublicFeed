@@ -69,9 +69,11 @@ class NetworkManager: ObservableObject {
 		// otherwise, download data from the remote URL and cache it if it's an image
 		session.downloadTask(with: request) { [unowned self] url, response, error in
 			// if there's a cached data for the remoteURL, return that data from cache (or don't if it's not an image, so the feed would reload)
-			if let cachedData = URLCache.shared.cachedResponse(for: request)?.data, self.status == .disconnected, !cachedData.isImageData {
-				completionHandler(cachedData, nil)
-				return
+			if let cachedData = URLCache.shared.cachedResponse(for: request)?.data {
+				if self.status == .disconnected && !cachedData.isImageData || cachedData.isImageData {
+					completionHandler(cachedData, nil)
+					return
+				}
 			}
 
 			guard let response = response, let url = url,
@@ -90,10 +92,14 @@ class NetworkManager: ObservableObject {
 		.resume()
 	}
 	
+	/// Return cached data for a given URL if any.
+	func cachedData(from url: URL) -> Data? {
+		let request = URLRequest(url: url)
+		return URLCache.shared.cachedResponse(for: request)?.data
+	}
 	
 	/// Returns *true* if a given URL is already cached.
 	func isCached(_ url: URL) -> Bool {
-		let request = URLRequest(url: url)
-		return URLCache.shared.cachedResponse(for: request)?.data != nil
+		cachedData(from: url) != nil
 	}
 }

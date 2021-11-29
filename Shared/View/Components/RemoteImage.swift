@@ -53,11 +53,19 @@ private class RemoteImageService: ObservableObject {
 	}
 
 	func loadImage(for url: URL) {
+		// Try to load image from cache to prevent from switching to background queue,
+		// which is the case with the default retrieveData method of NetworkManager.
+		// Switching to background thread even for a short time will display the placeholder image for a bit.
+		if let data = NetworkManager.shared.cachedData(from: url), let image = UIImage(data: data) {
+			self.image = image
+			return
+		}
+
 		// use the network manager service because it does all the caching
 		NetworkManager.shared.retrieveData(from: url) { data, _ in
 			guard let data = data, let image = UIImage(data: data) else { return }
-			DispatchQueue.main.async {
-				self.image = image
+			DispatchQueue.main.async { [weak self] in
+				self?.image = image
 			}
 		}
 	}
