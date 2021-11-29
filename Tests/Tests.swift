@@ -20,31 +20,41 @@ class Tests_iOS: XCTestCase {
     }
 	
 	func testFeedDecoding() {
-		XCTAssertEqual(viewModel.posts.count, 5)
-		XCTAssertEqual(viewModel.posts.first?.tags, "")
-		XCTAssertEqual(viewModel.posts.first?.media.keys.count, 3)
-		XCTAssertEqual(viewModel.posts.first?.author, "nobody@flickr.com (\"moniquemaynard685\")")
-		XCTAssertEqual(viewModel.posts.first?.title, "Pic a ventre roux /Red-bellied woodpecker")
-		XCTAssertEqual(viewModel.posts.first?.link.absoluteString, "https://www.flickr.com/photos/132471590@N04/51710334527/")
-		XCTAssertEqual(viewModel.posts.first?.publishedDate.formatted(date: .abbreviated, time: .omitted), "Nov 28, 2021")
-		XCTAssertEqual(viewModel.posts.first?.takenDate.formatted(date: .abbreviated, time: .omitted), "Nov 28, 2021")
-		XCTAssertEqual(viewModel.posts.first?.previewSize, CGSize(width: 240, height: 173))
-		XCTAssertEqual(viewModel.posts.first?.media[.squaredLarge]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_q.jpg")
-		XCTAssertEqual(viewModel.posts.first?.media[.small]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_m.jpg")
-		XCTAssertEqual(viewModel.posts.first?.media[.large]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_b.jpg")
+		// set up the json decoder
+		let jsonDecoder = JSONDecoder()
+		jsonDecoder.dateDecodingStrategy = .iso8601
+		
+		// try to decode json from the aquired data
+		let publicFeed = try? jsonDecoder.decode(Flickr.PublicFeed.self, from: testJSONString.data(using: .utf8)!)
+		XCTAssertNotNil(publicFeed)
+		let decodedPosts = publicFeed!.posts
+		
+		XCTAssertEqual(decodedPosts.count, 5)
+		
+		XCTAssertEqual(decodedPosts.first?.tags, "")
+		XCTAssertEqual(decodedPosts.first?.media.keys.count, 3)
+		XCTAssertEqual(decodedPosts.first?.author, "nobody@flickr.com (\"moniquemaynard685\")")
+		XCTAssertEqual(decodedPosts.first?.title, "Pic a ventre roux /Red-bellied woodpecker")
+		XCTAssertEqual(decodedPosts.first?.link.absoluteString, "https://www.flickr.com/photos/132471590@N04/51710334527/")
+		XCTAssertEqual(decodedPosts.first?.publishedDate.formatted(date: .abbreviated, time: .omitted), "Nov 28, 2021")
+		XCTAssertEqual(decodedPosts.first?.takenDate.formatted(date: .abbreviated, time: .omitted), "Nov 28, 2021")
+		XCTAssertEqual(decodedPosts.first?.previewSize, CGSize(width: 240, height: 173))
+		XCTAssertEqual(decodedPosts.first?.media[.squaredLarge]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_q.jpg")
+		XCTAssertEqual(decodedPosts.first?.media[.small]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_m.jpg")
+		XCTAssertEqual(decodedPosts.first?.media[.large]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_b.jpg")
 
 		// respect the sorting done by view model
-		XCTAssertEqual(viewModel.posts.last?.tags, "birdphotography birding backyardbirding wildlife yellowrump nature bird backyardbird birdwatching yellow warbler wings naturephotography")
-		XCTAssertEqual(viewModel.posts.last?.media.keys.count, 3)
-		XCTAssertEqual(viewModel.posts.last?.author, "nobody@flickr.com (\"ChrisF_2011\")")
-		XCTAssertEqual(viewModel.posts.last?.title, "Yellow-rumped Warbler")
-		XCTAssertEqual(viewModel.posts.last?.link.absoluteString, "https://www.flickr.com/photos/chrisf_2011/51710335532/")
-		XCTAssertEqual(viewModel.posts.last?.publishedDate.formatted(date: .abbreviated, time: .omitted), "Nov 28, 2021")
-		XCTAssertEqual(viewModel.posts.last?.takenDate.formatted(date: .abbreviated, time: .omitted), "Nov 25, 2021")
-		XCTAssertEqual(viewModel.posts.last?.previewSize, CGSize(width: 240, height: 150))
-		XCTAssertEqual(viewModel.posts.last?.media[.squaredLarge]?.absoluteString, "https://live.staticflickr.com/65535/51710335532_ba4918fbf1_q.jpg")
-		XCTAssertEqual(viewModel.posts.last?.media[.small]?.absoluteString, "https://live.staticflickr.com/65535/51710335532_ba4918fbf1_m.jpg")
-		XCTAssertEqual(viewModel.posts.last?.media[.large]?.absoluteString, "https://live.staticflickr.com/65535/51710335532_ba4918fbf1_b.jpg")
+		XCTAssertEqual(decodedPosts[3].tags, "birdphotography birding backyardbirding wildlife yellowrump nature bird backyardbird birdwatching yellow warbler wings naturephotography")
+		XCTAssertEqual(decodedPosts[3].media.keys.count, 3)
+		XCTAssertEqual(decodedPosts[3].author, "nobody@flickr.com (\"ChrisF_2011\")")
+		XCTAssertEqual(decodedPosts[3].title, "Yellow-rumped Warbler")
+		XCTAssertEqual(decodedPosts[3].link.absoluteString, "https://www.flickr.com/photos/chrisf_2011/51710335532/")
+		XCTAssertEqual(decodedPosts[3].publishedDate.formatted(date: .abbreviated, time: .omitted), "Nov 28, 2021")
+		XCTAssertEqual(decodedPosts[3].takenDate.formatted(date: .abbreviated, time: .omitted), "Nov 25, 2021")
+		XCTAssertEqual(decodedPosts[3].previewSize, CGSize(width: 240, height: 150))
+		XCTAssertEqual(decodedPosts[3].media[.squaredLarge]?.absoluteString, "https://live.staticflickr.com/65535/51710335532_ba4918fbf1_q.jpg")
+		XCTAssertEqual(decodedPosts[3].media[.small]?.absoluteString, "https://live.staticflickr.com/65535/51710335532_ba4918fbf1_m.jpg")
+		XCTAssertEqual(decodedPosts[3].media[.large]?.absoluteString, "https://live.staticflickr.com/65535/51710335532_ba4918fbf1_b.jpg")
 	}
 	
 	func testFeedEncoding() {
@@ -84,7 +94,7 @@ class Tests_iOS: XCTestCase {
 		NetworkManager.shared.retrieveData(from: url) { _, _ in
 			// nothing happens here
 		}
-		_ = XCTWaiter.wait(for: [XCTestExpectation(description: "Make sure the image downloaded and cached!")], timeout: 3.0)
+		_ = XCTWaiter.wait(for: [XCTestExpectation(description: "Make sure the image downloaded and cached!")], timeout: 5.0)
 		XCTAssertTrue(NetworkManager.shared.isCached(url))
 	}
 }
