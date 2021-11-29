@@ -43,7 +43,6 @@ class Tests_iOS: XCTestCase {
 		XCTAssertEqual(decodedPosts.first?.media[.small]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_m.jpg")
 		XCTAssertEqual(decodedPosts.first?.media[.large]?.absoluteString, "https://live.staticflickr.com/65535/51710334527_c95af67147_b.jpg")
 
-		// respect the sorting done by view model
 		XCTAssertEqual(decodedPosts[3].tags, "birdphotography birding backyardbirding wildlife yellowrump nature bird backyardbird birdwatching yellow warbler wings naturephotography")
 		XCTAssertEqual(decodedPosts[3].media.keys.count, 3)
 		XCTAssertEqual(decodedPosts[3].author, "nobody@flickr.com (\"ChrisF_2011\")")
