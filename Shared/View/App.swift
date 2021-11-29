@@ -16,7 +16,6 @@ struct FlickrPublicFeedApp: App {
         WindowGroup {
             ContentView()
 				.environmentObject(viewModel)
-				.environmentObject(NetworkManager.shared)
 				.onReceive(viewModel.$networkStatus, perform: { value in
 					// this won't work on simulator, please use a real iPhone
 					if value == .disconnected {
