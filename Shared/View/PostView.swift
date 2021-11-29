@@ -68,6 +68,7 @@ struct PostView: View {
 				Spacer()
 			}
 		}
+		.navigationBarTitleDisplayMode(.inline)
 		.sheet(isPresented: $isVisitingServer) {
 			SafariView(url: post.link)
 		}
